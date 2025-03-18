@@ -9,9 +9,10 @@
 $router = $this->getRouter();
 
 // Rotas de autenticação
+// Rotas de autenticação
 $router->add('/', 'AuthController', 'login', 'GET');
 $router->add('login', 'AuthController', 'login', 'GET');
-$router->add('login', 'AuthController', 'authenticate', 'POST');
+$router->add('auth/login', 'AuthController', 'authenticate', 'POST'); // Caminho diferente para o POST
 $router->add('logout', 'AuthController', 'logout', 'GET');
 $router->add('recuperar-senha', 'AuthController', 'recuperarSenha', 'GET');
 $router->add('recuperar-senha', 'AuthController', 'processarRecuperacao', 'POST');

@@ -1,11 +1,12 @@
 <?php
+
 namespace App\Core;
 
 class Router
 {
     protected $routes = [];
     protected $params = [];
-    
+
     /**
      * Adiciona uma rota ao router
      */
@@ -15,10 +16,10 @@ class Router
         if ($route === '') {
             $route = '/';
         }
-        
+
         // Converter a rota para um padrão de expressão regular
         $route_regex = $this->routeToRegex($route);
-        
+
         // Adicionar a rota e seus parâmetros
         $this->routes[$route_regex] = [
             'controller' => $controller,
@@ -27,21 +28,23 @@ class Router
             'original' => $route
         ];
     }
-    
+
     /**
      * Converte uma rota em expressão regular
      */
     private function routeToRegex($route)
     {
         if ($route === '/') {
-            return '/^\\/?$/i';
+            return '/^\\/?$/i'; // Aceita / ou vazio
         }
-        
+
         $route = preg_replace('/\//', '\\/', $route);
         $route = preg_replace('/\{([a-z]+)\}/', '(?P<\1>[a-z0-9-_]+)', $route);
-        return '/^' . $route . '$/i';
+
+        // Tornar a barra final opcional
+        return '/^' . $route . '\/?$/i';
     }
-    
+
     /**
      * Verifica se uma URL corresponde a alguma rota
      */
@@ -51,57 +54,81 @@ class Router
         if ($url === '') {
             $url = '/';
         }
-        
+
         // Remover barra final (exceto para raiz)
         if ($url !== '/' && substr($url, -1) === '/') {
             $url = rtrim($url, '/');
         }
-        
+
         foreach ($this->routes as $route => $params) {
             if (preg_match($route, $url, $matches)) {
-                // Adicionar parâmetros capturados pela expressão regular
+                // Verificar se o método HTTP coincide
+                if ($params['method'] !== $_SERVER['REQUEST_METHOD']) {
+                    continue; // Método não coincide, continuar procurando
+                }
+
+                // Método coincide, adicionar parâmetros capturados
                 foreach ($matches as $key => $match) {
                     if (is_string($key)) {
                         $params[$key] = $match;
                     }
                 }
-                
+
                 $this->params = $params;
                 return true;
             }
         }
-        
+
         return false;
     }
-    
+
     /**
      * Despacha a requisição para o controlador correto
      */
     public function dispatch($url)
     {
-        if (DEBUG) {
-            echo "URL: " . $url . "<br>";
-            echo "Método: " . $_SERVER['REQUEST_METHOD'] . "<br>";
-            echo "Rotas disponíveis: <pre>";
-            print_r($this->routes);
-            echo "</pre>";
+        // Debug
+        echo "<div style='background: #f8f9fa; padding: 10px; margin: 10px; border: 1px solid #ddd;'>";
+        echo "<h3>Router Debug</h3>";
+        echo "<p>URL: " . htmlspecialchars($url) . "</p>";
+        echo "<p>Method: " . $_SERVER['REQUEST_METHOD'] . "</p>";
+        echo "<p>Routes:</p><ul>";
+
+        foreach ($this->routes as $route => $params) {
+            echo "<li>" . htmlspecialchars($route) . " => " .
+                htmlspecialchars($params['controller'] . '@' . $params['action']) .
+                " [" . $params['method'] . "]</li>";
         }
+
+        echo "</ul>";
+
+        // Tentar encontrar a rota
+        $found = $this->match($url);
+        echo "<p>Route matched: " . ($found ? "Yes" : "No") . "</p>";
+
+        if ($found) {
+            echo "<p>Matched route: " .
+                htmlspecialchars($this->params['controller'] . '@' . $this->params['action']) .
+                " [" . $this->params['method'] . "]</p>";
+        }
+
+        echo "</div>";
         // Debug para desenvolvimento (removido na produção)
         $debug = defined('DEBUG') && DEBUG;
-        
+
         // Normalizar URL vazia para '/'
         if (empty($url) || $url === '') {
             $url = '/';
         }
-        
+
         // Remover query string
         $url = $this->removeQueryStringVariables($url);
-        
+
         // Remover barra final (exceto para raiz)
         if ($url !== '/' && substr($url, -1) === '/') {
             $url = rtrim($url, '/');
         }
-        
+
         // Esta parte só é executada no modo de debug
         if ($debug) {
             echo '<div style="padding: 10px; margin: 10px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 5px;">';
@@ -111,38 +138,38 @@ class Router
             echo '<p><strong>Rotas disponíveis:</strong></p>';
             echo '<ul>';
             foreach ($this->routes as $route => $params) {
-                echo '<li><strong>' . htmlspecialchars($params['original'] ?? 'unknown') . '</strong> => ' 
-                     . htmlspecialchars($params['controller'] . '@' . $params['action']) 
-                     . ' [' . $params['method'] . ']</li>';
+                echo '<li><strong>' . htmlspecialchars($params['original'] ?? 'unknown') . '</strong> => '
+                    . htmlspecialchars($params['controller'] . '@' . $params['action'])
+                    . ' [' . $params['method'] . ']</li>';
             }
             echo '</ul>';
             echo '</div>';
         }
-        
+
         if ($this->match($url)) {
             $controller = $this->params['controller'];
             $action = $this->params['action'];
             $method = $this->params['method'];
-            
+
             // Verificar método HTTP
             if ($_SERVER['REQUEST_METHOD'] !== $method) {
                 header('HTTP/1.1 405 Method Not Allowed');
                 echo "Método HTTP não permitido. Esperado: $method, recebido: " . $_SERVER['REQUEST_METHOD'];
                 return;
             }
-            
+
             $controllerName = "App\\Controllers\\{$controller}";
-            
+
             if (class_exists($controllerName)) {
                 $controller = new $controllerName();
-                
+
                 if (method_exists($controller, $action)) {
                     // Remover parâmetros que não são da rota
                     unset($this->params['controller']);
                     unset($this->params['action']);
                     unset($this->params['method']);
                     unset($this->params['original']);
-                    
+
                     call_user_func_array([$controller, $action], $this->params);
                 } else {
                     header('HTTP/1.1 404 Not Found');
@@ -155,12 +182,12 @@ class Router
         } else {
             header('HTTP/1.1 404 Not Found');
             echo "Rota não encontrada: {$url}";
-            
+
             // Depuração detalhada (apenas no modo DEBUG)
             if ($debug) {
                 echo '<div style="padding: 10px; margin: 10px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 5px;">';
                 echo '<h3>Detalhes de Depuração</h3>';
-                
+
                 // Exibir todas as rotas
                 echo '<h4>Rotas Registradas:</h4>';
                 echo '<ul>';
@@ -174,11 +201,11 @@ class Router
                     echo '</li>';
                 }
                 echo '</ul>';
-                
+
                 // Exibir tentativa de correspondência
                 echo '<h4>Tentativa de Correspondência:</h4>';
                 echo '<p><strong>URL Normalizada:</strong> ' . htmlspecialchars($url) . '</p>';
-                
+
                 // Fazer teste manual de cada rota
                 echo '<h4>Teste Manual de Rotas:</h4>';
                 echo '<ul>';
@@ -194,12 +221,12 @@ class Router
                     echo '</li>';
                 }
                 echo '</ul>';
-                
+
                 echo '</div>';
             }
         }
     }
-    
+
     /**
      * Remove variáveis da query string da URL
      */
@@ -208,11 +235,16 @@ class Router
         if ($url !== '') {
             $parts = explode('?', $url, 2);
             $url = $parts[0];
+
+            // Remover barra final (exceto para raiz)
+            if ($url !== '/' && substr($url, -1) === '/') {
+                $url = rtrim($url, '/');
+            }
         }
-        
+
         return $url;
     }
-    
+
     /**
      * Obtém os parâmetros da rota atual
      */
@@ -220,7 +252,7 @@ class Router
     {
         return $this->params;
     }
-    
+
     /**
      * Obtém todas as rotas registradas
      */

@@ -1,8 +1,12 @@
 # Redirecionar todas as solicitações para o diretório /public
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteRule ^$ public/ [L]
-    RewriteRule (.*) public/$1 [L]
+    RewriteBase /
+    
+    # Redirecionar para index.php se não for arquivo ou diretório
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php [QSA,L]
 </IfModule>
 
 # Impedir acesso direto a arquivos sensíveis

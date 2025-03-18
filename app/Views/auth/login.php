@@ -7,7 +7,7 @@
     <div class="card-body p-4">
         <h2 class="text-center mb-4">Entrar no sistema</h2>
 
-        <form action="<?php echo base_url('login'); ?>" method="POST">
+        <form action="<?php echo base_url('auth/login'); ?>" method="POST">
             <div class="mb-3">
                 <label for="email" class="form-label">E-mail</label>
                 <div class="input-group">
@@ -44,3 +44,15 @@
         &copy; <?php echo date('Y'); ?> Portal Escolar - Todos os direitos reservados
     </p>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        console.log('Formulário sendo enviado com método:', form.method);
+        console.log('Action:', form.action);
+        // Remova este 'prevent' após o debug
+        // e.preventDefault();
+    });
+});
+</script>
