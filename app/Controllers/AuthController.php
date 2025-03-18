@@ -2,18 +2,18 @@
 namespace App\Controllers;
 
 use App\Core\Session;
-use App\Models\Usuario;
-use App\Models\Instituicao;
+use App\Models\Institution;
+use App\Models\User;
 
 class AuthController extends BaseController
 {
-    protected $usuarioModel;
-    protected $instituicaoModel;
+    protected $userModel;
+    protected $institutionModel;
     
     public function __construct()
     {
-        $this->usuarioModel = new Usuario();
-        $this->instituicaoModel = new Instituicao();
+        $this->userModel = new User();
+        $this->institutionModel = new Institution();
         
         // Não chamar o construtor do pai para evitar o redirecionamento
     }
@@ -45,7 +45,7 @@ class AuthController extends BaseController
             $this->redirect('/login');
         }
         
-        $usuario = $this->usuarioModel->authenticate($email, $senha);
+        $usuario = $this->userModel->authenticate($email, $senha);
         
         if (!$usuario) {
             Session::set('error', 'E-mail ou senha inválidos.');
@@ -53,7 +53,7 @@ class AuthController extends BaseController
         }
         
         // Verifica se a instituição está ativa
-        $instituicao = $this->instituicaoModel->find($usuario['instituicao_id']);
+        $instituicao = $this->institutionModel->find($usuario['instituicao_id']);
         
         if (!$instituicao || $instituicao['status'] !== 'ativo') {
             Session::set('error', 'Sua instituição está inativa. Entre em contato com o administrador.');
@@ -99,7 +99,7 @@ class AuthController extends BaseController
             $this->redirect('/recuperar-senha');
         }
         
-        $usuario = $this->usuarioModel->findWhere('email = :email', ['email' => $email]);
+        $usuario = $this->userModel->findWhere('email = :email', ['email' => $email]);
         
         if (!$usuario) {
             Session::set('error', 'E-mail não encontrado.');

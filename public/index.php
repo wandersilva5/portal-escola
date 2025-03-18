@@ -9,68 +9,80 @@
 // Definir constantes
 define('DS', DIRECTORY_SEPARATOR);
 define('ROOT', dirname(__DIR__));
-
-// Implementação simples de autoloader para classes
-spl_autoload_register(function($className) {
-    // Converter namespace separators para directory separators
-    $className = str_replace('\\', DS, $className);
-    $filePath = ROOT . DS . $className . '.php';
-    
-    if (file_exists($filePath)) {
-        require_once $filePath;
-        return true;
-    }
-    return false;
-});
-
-// Carregar variáveis de ambiente manualmente se o arquivo existir
-function loadEnv() {
-    $envFile = ROOT . DS . '.env';
-    if (file_exists($envFile)) {
-        $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        foreach ($lines as $line) {
-            // Ignorar comentários
-            if (strpos(trim($line), '#') === 0) {
-                continue;
-            }
-            
-            // Processar variáveis de ambiente
-            list($name, $value) = explode('=', $line, 2);
-            $name = trim($name);
-            $value = trim($value);
-            
-            // Remover aspas do valor se houver
-            if (strpos($value, '"') === 0 && strrpos($value, '"') === strlen($value) - 1) {
-                $value = substr($value, 1, -1);
-            } elseif (strpos($value, "'") === 0 && strrpos($value, "'") === strlen($value) - 1) {
-                $value = substr($value, 1, -1);
-            }
-            
-            // Substituir ${VAR} com valores já definidos
-            if (preg_match('/\${([A-Za-z0-9_]+)}/', $value, $matches)) {
-                $varName = $matches[1];
-                if (isset($_ENV[$varName])) {
-                    $value = str_replace('${' . $varName . '}', $_ENV[$varName], $value);
-                }
-            }
-            
-            $_ENV[$name] = $value;
-            putenv("$name=$value");
-        }
-    }
-}
-
-loadEnv();
+define('DEBUG', false); // Ative para desenvolvimento, desative para produção
 
 // Configurar tratamento de erros
 error_reporting(E_ALL);
-ini_set('display_errors', $_ENV['APP_DEBUG'] ?? false);
+ini_set('display_errors', DEBUG ? 1 : 0);
 
-// Iniciar sessão
-session_start();
+// Função para tratar erros de maneira amigável
+function exibirErro($mensagem, $arquivo = null, $linha = null, $stackTrace = null) {
+    echo '<div style="background-color: #f8d7da; color: #721c24; padding: 20px; margin: 20px; border-radius: 5px; border: 1px solid #f5c6cb;">';
+    echo '<h2 style="margin-top: 0;">Erro</h2>';
+    echo '<p><strong>Mensagem:</strong> ' . $mensagem . '</p>';
+    
+    if ($arquivo) {
+        echo '<p><strong>Arquivo:</strong> ' . $arquivo . '</p>';
+    }
+    
+    if ($linha) {
+        echo '<p><strong>Linha:</strong> ' . $linha . '</p>';
+    }
+    
+    if ($stackTrace) {
+        echo '<h3>Stack Trace:</h3>';
+        echo '<pre>' . $stackTrace . '</pre>';
+    } else {
+        echo '<h3>Stack Trace:</h3>';
+        echo '<pre>';
+        debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+        echo '</pre>';
+    }
+    
+    echo '</div>';
+}
 
-// Inicializar aplicação
-$app = new App\Core\Application();
-
-// Executar aplicação
-$app->run();
+try {
+    // Tentar carregar o autoloader do Composer
+    $composerAutoloader = ROOT . DS . 'vendor' . DS . 'autoload.php';
+    
+    if (file_exists($composerAutoloader)) {
+        require_once $composerAutoloader;
+    } else {
+        throw new Exception("Autoloader do Composer não encontrado. Execute 'composer install' na raiz do projeto.");
+    }
+    
+    // Carregar variáveis de ambiente
+    if (class_exists('Dotenv\\Dotenv')) {
+        $dotenv = Dotenv\Dotenv::createImmutable(ROOT);
+        $dotenv->safeLoad(); // Usa safeLoad para não lançar exceção se o arquivo não existir
+    }
+    
+    // Iniciar sessão
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+    
+    // Verificar diretórios de upload
+    $uploadsDir = ROOT . DS . 'public' . DS . 'uploads';
+    $uploadSubDirs = ['logos', 'fotos', 'documentos'];
+    
+    if (!is_dir($uploadsDir)) {
+        mkdir($uploadsDir, 0755, true);
+        
+        foreach ($uploadSubDirs as $subDir) {
+            if (!is_dir($uploadsDir . DS . $subDir)) {
+                mkdir($uploadsDir . DS . $subDir, 0755, true);
+            }
+        }
+    }
+    
+    // Inicializar e executar a aplicação
+    $app = new App\Core\Application();
+    $app->run();
+    
+} catch (Exception $e) {
+    exibirErro($e->getMessage(), $e->getFile(), $e->getLine(), $e->getTraceAsString());
+} catch (Error $e) {
+    exibirErro($e->getMessage(), $e->getFile(), $e->getLine(), $e->getTraceAsString());
+}

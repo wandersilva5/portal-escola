@@ -34,8 +34,15 @@ class Application
      */
     protected function getRequestUrl()
     {
+        // Obter o caminho da URL
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        return $uri ?? '/';
+        
+        // Se for nulo ou vazio, retornar '/'
+        if (empty($uri)) {
+            return '/';
+        }
+        
+        return $uri;
     }
     
     /**

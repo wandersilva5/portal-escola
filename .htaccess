@@ -1,48 +1,15 @@
-# Ativar rewrite engine
-RewriteEngine On
+# Redirecionar todas as solicitações para o diretório /public
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^$ public/ [L]
+    RewriteRule (.*) public/$1 [L]
+</IfModule>
 
-# Diretório base
-RewriteBase /
-
-# Não aplicar regras a arquivos e diretórios existentes
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-
-# Redirecionar todas as requisições para o index.php
-RewriteRule ^(.*)$ index.php/$1 [L,QSA]
-
-# Impedir acesso a arquivos .env, .htaccess e pastas específicas
-<FilesMatch "^\.env|\.htaccess$">
+# Impedir acesso direto a arquivos sensíveis
+<FilesMatch "^(\.env|composer\.json|composer\.lock)$">
     Order allow,deny
     Deny from all
 </FilesMatch>
 
-<FilesMatch "^(app|config|vendor)/.*$">
-    Order allow,deny
-    Deny from all
-</FilesMatch>
-
-# Configurações de segurança
-<IfModule mod_headers.c>
-    Header set X-Content-Type-Options "nosniff"
-    Header set X-XSS-Protection "1; mode=block"
-    Header set X-Frame-Options "SAMEORIGIN"
-    Header set Referrer-Policy "same-origin"
-</IfModule>
-
-# PHP settings
-<IfModule mod_php8.c>
-    php_flag display_errors Off
-    php_flag log_errors On
-    php_value error_log ../logs/php_errors.log
-    
-    php_value upload_max_filesize 10M
-    php_value post_max_size 10M
-    php_value max_execution_time 300
-    
-    # Segurança
-    php_flag session.cookie_httponly On
-    php_flag session.use_only_cookies On
-    php_flag session.cookie_secure On
-    php_flag session.use_strict_mode On
-</IfModule>
+# Impedir acesso direto a diretórios
+Options -Indexes

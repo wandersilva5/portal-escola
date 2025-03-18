@@ -9,7 +9,7 @@
 $router = $this->getRouter();
 
 // Rotas de autenticação
-$router->add('', 'AuthController', 'login', 'GET');
+$router->add('/', 'AuthController', 'login', 'GET');
 $router->add('login', 'AuthController', 'login', 'GET');
 $router->add('login', 'AuthController', 'authenticate', 'POST');
 $router->add('logout', 'AuthController', 'logout', 'GET');

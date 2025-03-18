@@ -3,7 +3,7 @@
         'name' => 'portal-escola/app',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '69bbbbc1c7fa6060495c158d9ecf724d83942356',
+        'reference' => 'ff2140fdac3b43b3df64b75ae4e4e96f50641fa8',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -31,7 +31,7 @@
         'portal-escola/app' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '69bbbbc1c7fa6060495c158d9ecf724d83942356',
+            'reference' => 'ff2140fdac3b43b3df64b75ae4e4e96f50641fa8',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
