@@ -1,0 +1,361 @@
+/**
+ * Portal Escolar - Estilos para o painel administrativo
+ */
+
+/* Layout principal */
+.admin-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+.content {
+    flex: 1;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 260px;
+    background-color: #233446;
+    color: #fff;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar.collapsed {
+    width: 70px;
+}
+
+.sidebar-header {
+    padding: 1.25rem 1rem;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo {
+    width: 38px;
+    height: 38px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-right: 0.75rem;
+}
+
+.text-logo {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #3498db;
+    border-radius: 50%;
+    font-weight: bold;
+    font-size: 1.25rem;
+    margin-right: 0.75rem;
+}
+
+.sidebar-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: opacity 0.3s;
+}
+
+.sidebar.collapsed .sidebar-header h3 {
+    opacity: 0;
+    width: 0;
+}
+
+.sidebar-content {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.nav-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-item {
+    margin: 0.25rem 0;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1.25rem;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover, .nav-item.active .nav-link {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-link i {
+    font-size: 1.1rem;
+    min-width: 1.5rem;
+    margin-right: 0.5rem;
+}
+
+.nav-link span {
+    transition: opacity 0.3s;
+}
+
+.sidebar.collapsed .nav-link span {
+    opacity: 0;
+    width: 0;
+    display: none;
+}
+
+/* Header */
+.header {
+    height: 64px;
+    padding: 0 1.5rem;
+    background-color: #fff;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+}
+
+.sidebar-toggle {
+    font-size: 1.5rem;
+    color: #495057;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-right: 1rem;
+}
+
+.header-title h4 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: #212529;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Footer */
+.footer {
+    padding: 1rem 1.5rem;
+    background-color: #fff;
+    border-top: 1px solid #e9ecef;
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+/* Cards */
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 1px solid #e9ecef;
+    padding: 1rem 1.25rem;
+}
+
+.card-title {
+    color: #212529;
+    font-weight: 500;
+    margin-bottom: 0;
+}
+
+/* Stat Cards */
+.stat-card {
+    transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: #fff;
+}
+
+.bg-primary .stat-icon {
+    background-color: #3498db;
+}
+
+.bg-success .stat-icon {
+    background-color: #2ecc71;
+}
+
+.bg-info .stat-icon {
+    background-color: #3498db;
+}
+
+.bg-warning .stat-icon {
+    background-color: #f39c12;
+}
+
+.stat-title {
+    color: #6c757d;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+    font-weight: 500;
+}
+
+.stat-value {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin-bottom: 0;
+    color: #212529;
+}
+
+/* Welcome Card */
+.welcome-card {
+    background-color: #f8f9fa;
+    border-left: 4px solid #3498db;
+}
+
+/* Activity List */
+.activity-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 1rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    font-size: 1.25rem;
+}
+
+.activity-content {
+    flex: 1;
+}
+
+/* Institution Logo Placeholder */
+.institution-logo-placeholder {
+    width: 120px;
+    height: 120px;
+    background-color: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    font-weight: bold;
+    color: #6c757d;
+    margin: 0 auto;
+    border-radius: 6px;
+}
+
+/* Avatar Circle */
+.avatar-circle {
+    width: 32px;
+    height: 32px;
+    background-color: #3498db;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: bold;
+}
+
+.avatar-text {
+    font-size: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 991.98px) {
+    .sidebar {
+        width: 70px;
+    }
+    
+    .sidebar .sidebar-header h3 {
+        opacity: 0;
+        width: 0;
+    }
+    
+    .sidebar .nav-link span {
+        opacity: 0;
+        width: 0;
+        display: none;
+    }
+    
+    .sidebar.expanded {
+        width: 260px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 1040;
+    }
+    
+    .sidebar.expanded .sidebar-header h3 {
+        opacity: 1;
+        width: auto;
+    }
+    
+    .sidebar.expanded .nav-link span {
+        opacity: 1;
+        width: auto;
+        display: inline;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .main-content {
+        margin-left: 0;
+    }
+    
+    .header-title h4 {
+        font-size: 1.1rem;
+    }
+}

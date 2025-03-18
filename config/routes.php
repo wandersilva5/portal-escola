@@ -1,10 +1,12 @@
 <?php
 /**
  * Definição de rotas do sistema
+ * 
+ * Este arquivo é incluído pelo Application.php
  */
 
-// Obter instância do Router
-$router = $app->getRouter();
+// Obter instância do Router diretamente da instância atual
+$router = $this->getRouter();
 
 // Rotas de autenticação
 $router->add('', 'AuthController', 'login', 'GET');

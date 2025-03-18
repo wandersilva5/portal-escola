@@ -1,0 +1,25 @@
+{
+    "name": "portal-escola/app",
+    "description": "Sistema de gestão escolar multi-instituição em PHP",
+    "type": "project",
+    "require": {
+        "php": ">=8.0",
+        "vlucas/phpdotenv": "^5.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        },
+        "files": [
+            "app/Helpers/AuthHelper.php",
+            "app/Helpers/functions.php"
+        ]
+    },
+    "authors": [
+        {
+            "name": "Portal Escolar",
+            "email": "contato@portalescolar.com"
+        }
+    ],
+    "minimum-stability": "stable"
+}
