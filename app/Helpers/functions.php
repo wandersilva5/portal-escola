@@ -4,7 +4,7 @@
  * 
  * Este arquivo contém funções auxiliares que podem ser usadas em todo o sistema.
  */
-
+use App\Helpers\UrlHelper;
 if (!function_exists('env')) {
     /**
      * Obtém uma variável de ambiente ou valor padrão
@@ -230,3 +230,13 @@ if (!function_exists('debug')) {
         }
     }
 }
+
+
+
+if (!function_exists('base_url')) {
+    function base_url($path = '')
+    {
+        return UrlHelper::baseUrl($path);
+    }
+}
+

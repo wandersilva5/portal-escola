@@ -7,7 +7,7 @@
     <div class="card-body p-4">
         <h2 class="text-center mb-4">Entrar no sistema</h2>
 
-        <form action="/login" method="POST">
+        <form action="<?php echo base_url('login'); ?>" method="POST">
             <div class="mb-3">
                 <label for="email" class="form-label">E-mail</label>
                 <div class="input-group">

@@ -79,6 +79,13 @@ class Router
      */
     public function dispatch($url)
     {
+        if (DEBUG) {
+            echo "URL: " . $url . "<br>";
+            echo "Método: " . $_SERVER['REQUEST_METHOD'] . "<br>";
+            echo "Rotas disponíveis: <pre>";
+            print_r($this->routes);
+            echo "</pre>";
+        }
         // Debug para desenvolvimento (removido na produção)
         $debug = defined('DEBUG') && DEBUG;
         

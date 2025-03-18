@@ -3,22 +3,24 @@ namespace App\Models;
 
 class User extends BaseModel
 {
-    protected $table = 'usuarios';
+    protected $table = 'users';
     protected $primaryKey = 'id';
     protected $fillable = [
-        'nome',
+        'name',
         'email',
-        'senha',
-        'tipo',
+        'password',
+        'type',
         'status',
-        'instituicao_id',
+        'institution_id',
         'ultimo_acesso',
-        'telefone',
-        'foto'
+        'phone',
+        'photo',
+        'created_at',
+        'updated_at',
     ];
     
     
-    public function authenticate($email, $senha)
+    public function authenticate($email, $password)
     {
         $usuario = $this->findWhere('email = :email', ['email' => $email]);
         
@@ -26,8 +28,8 @@ class User extends BaseModel
             return false;
         }
         
-        // Verifica senha
-        if (!password_verify($senha, $usuario['senha'])) {
+        // Verifica password
+        if (!password_verify($password, $usuario['password'])) {
             return false;
         }
         
@@ -38,7 +40,7 @@ class User extends BaseModel
         
         // Atualiza data do último acesso
         $this->update($usuario['id'], [
-            'ultimo_acesso' => date('Y-m-d H:i:s')
+            'last_access' => date('Y-m-d H:i:s')
         ]);
         
         return $usuario;
@@ -49,9 +51,9 @@ class User extends BaseModel
      */
     public function createUser($data)
     {
-        // Hash na senha
-        if (isset($data['senha'])) {
-            $data['senha'] = password_hash($data['senha'], PASSWORD_DEFAULT);
+        // Hash na password
+        if (isset($data['password'])) {
+            $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
         }
         
         return $this->create($data);
@@ -62,12 +64,12 @@ class User extends BaseModel
      */
     public function updateUser($id, $data, $instituicaoId = null)
     {
-        // Hash na senha se estiver sendo alterada
-        if (isset($data['senha']) && !empty($data['senha'])) {
-            $data['senha'] = password_hash($data['senha'], PASSWORD_DEFAULT);
+        // Hash na password se estiver sendo alterada
+        if (isset($data['password']) && !empty($data['password'])) {
+            $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
         } else {
-            // Remove senha vazia para não atualizar
-            unset($data['senha']);
+            // Remove password vazia para não atualizar
+            unset($data['password']);
         }
         
         return $this->update($id, $data, $instituicaoId);
@@ -78,14 +80,14 @@ class User extends BaseModel
      */
     public function getPorInstituicao($instituicaoId)
     {
-        return $this->where('instituicao_id = :instituicao_id', ['instituicao_id' => $instituicaoId]);
+        return $this->where('institution_id = :institution_id', ['institution_id' => $instituicaoId]);
     }
     
     /**
      * Lista usuários por tipo
      */
-    public function getPorTipo($tipo, $instituicaoId = null)
+    public function getType($type, $instituicaoId = null)
     {
-        return $this->where('tipo = :tipo', ['tipo' => $tipo], $instituicaoId);
+        return $this->where('type = :type', ['type' => $type], $instituicaoId);
     }
 }

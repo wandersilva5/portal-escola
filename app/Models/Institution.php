@@ -3,64 +3,64 @@ namespace App\Models;
 
 class Institution extends BaseModel
 {
-    protected $table = 'instituicoes';
+    protected $table = 'institutions';
     protected $primaryKey = 'id';
     protected $fillable = [
-        'nome',
+        'name',
         'cnpj',
         'email',
-        'telefone',
-        'endereco',
-        'cidade',
-        'estado',
-        'cep',
+        'phone',
+        'address',
+        'city',
+        'state',
+        'zip_code',
         'logo',
         'status',
-        'data_expiracao',
-        'plano'
+        'expiration_date',
+        'plan'
     ];
     
     /**
      * Retorna instituições ativas
      */
-    public function ativos()
+    public function actives()
     {
-        return $this->where('status = :status', ['status' => 'ativo']);
+        return $this->where('status = :status', ['status' => 'active']);
     }
     
     /**
      * Verifica se a instituição está ativa
      */
-    public function estaAtiva($id)
+    public function isActive($id)
     {
-        $instituicao = $this->find($id);
-        return $instituicao && $instituicao['status'] === 'ativo';
+        $institution = $this->find($id);
+        return $institution && $institution['status'] === 'active';
     }
     
     /**
      * Verifica se a instituição está dentro da data de expiração
      */
-    public function dentroDaValidade($id)
+    public function withinValidity($id)
     {
-        $instituicao = $this->find($id);
+        $institution = $this->find($id);
         
-        if (!$instituicao) {
+        if (!$institution) {
             return false;
         }
         
         // Se não tiver data de expiração, consideramos válido
-        if (empty($instituicao['data_expiracao'])) {
+        if (empty($institution['expiration_date'])) {
             return true;
         }
         
         $hoje = date('Y-m-d');
-        return $instituicao['data_expiracao'] >= $hoje;
+        return $institution['expiration_date'] >= $hoje;
     }
     
     /**
      * Atualiza o status da instituição
      */
-    public function atualizarStatus($id, $status)
+    public function updateStatus($id, $status)
     {
         return $this->update($id, ['status' => $status]);
     }
